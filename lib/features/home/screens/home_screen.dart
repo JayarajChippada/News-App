@@ -13,19 +13,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            const TopWidget(),
-            SizedBox(
-                height: MediaQuery.of(context).size.height * 0.75,
-                child: MyTabBar()),
-          ],
+      body: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.08,
+              ),
+              const TopWidget(),
+              SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.75,
+                  child: MyTabBar()),
+            ],
+          ),
         ),
       ),
     );

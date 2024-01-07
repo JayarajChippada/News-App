@@ -16,15 +16,21 @@ class SearchServices {
     List<Article> articles = [];
     try {
       http.Response res = await http.get(Uri.parse(
-        '$uri/everything?q=$query&$apiKey',
+        '$uri/everything?q=$query&apiKey=$apiKey',
       ));
+
+      var jsonData = jsonDecode(res.body);
 
       httpErrorHandles(
         context: context,
         response: res,
         onSuccess: () {
-          for (int i = 0; i < jsonDecode(res.body).length; i++) {
-            articles.add(Article.fromJson(jsonEncode(res.body)[i]));
+          for (int i = 0; i < jsonData['articles'].length; i++) {
+            if (jsonData['articles'][i]['urlToImage'] != null &&
+                jsonData['articles'][i]['description'] != null) {
+              articles
+                  .add(Article.fromJson(jsonEncode(jsonData['articles'][i])));
+            }
           }
         },
       );
