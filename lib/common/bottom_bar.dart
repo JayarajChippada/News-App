@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/constants/global_variables.dart';
 import 'package:news_app/features/home/screens/home_screen.dart';
+import 'package:news_app/features/savedposts/screens/savedpost_screen.dart';
 import 'package:unicons/unicons.dart';
 
 class MyBottomBar extends StatefulWidget {
@@ -31,7 +32,7 @@ class _MyBottomBarState extends State<MyBottomBar> {
         onPageChanged: (page) => updatePage(page),
         children:const [
           HomeScreen(),
-          Center(child: Text("Saved"),),
+          SavedPostsScreen(),
           Center(child: Text("Profile"),),
           Center(child: Text("Menu"),),
         ],

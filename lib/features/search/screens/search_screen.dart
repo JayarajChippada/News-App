@@ -37,19 +37,13 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void navigateToArticleDetailsScreen({
-  required String urlToImage,
-  required String title,
-  required String description,
-  required String content
+  required Article article,
   }) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) =>  ArticleDetailsScreen(
-          urlToImage: urlToImage,
-          title: title,
-          description: description,
-          content: content,
+          article: article,
         ),
       ),
     );
@@ -65,11 +59,17 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return articles == null
-        ? const Loader()
-        : Scaffold(
+    if (articles == null || articles!.isEmpty) {
+      return Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: Colors.white,
+          child: const Center(child: Loader()));
+    }
+    return Scaffold(
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(60),
               child: AppBar(
@@ -139,10 +139,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           itemBuilder: (context, index) {
                             return GestureDetector(
                                 onTap: () => navigateToArticleDetailsScreen(
-                                  urlToImage: articles![index].urlToImage,
-                                  title: articles![index].title,
-                                  description: articles![index].description,
-                                  content: articles![index].content
+                                  article: articles![index]
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(10),

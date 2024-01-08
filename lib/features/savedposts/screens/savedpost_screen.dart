@@ -1,58 +1,24 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:news_app/common/loader.dart';
 import 'package:news_app/constants/global_variables.dart';
-import 'package:news_app/constants/utilis.dart';
-import 'package:news_app/features/home/services/home_services.dart';
-import 'package:news_app/models/article.dart';
 import 'package:news_app/providers/saved_posts.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
 
-class ArticleScreen extends StatefulWidget {
-  final int categoryIndex;
-  final int subCategoryIndex;
-
-  const ArticleScreen({
-    Key? key,
-    required this.categoryIndex,
-    required this.subCategoryIndex,
-  }) : super(key: key);
+class SavedPostsScreen extends StatefulWidget {
+  const SavedPostsScreen({super.key});
 
   @override
-  State<ArticleScreen> createState() => _ArticleScreenState();
+  State<SavedPostsScreen> createState() => _SavedPostsScreenState();
 }
 
-class _ArticleScreenState extends State<ArticleScreen> {
-  final HomeServices homeServices = HomeServices();
-  List<Article>? articles;
-  bool _isSaved = false;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchNews();
-  }
-
-  void fetchNews() async {
-    try {
-      articles = await homeServices.fetchTrendingArticles(
-        context: context,
-        category: GlobalVariables.categories[widget.categoryIndex]['category'],
-        subCategory: GlobalVariables.categories[widget.categoryIndex]
-            ['subcategory'][widget.subCategoryIndex],
-      );
-      setState(() {});
-    } catch (e) {
-      showSnackBar(context, e.toString());
-    }
-  }
-
+class _SavedPostsScreenState extends State<SavedPostsScreen> {
   @override
   Widget build(BuildContext context) {
-    if (articles == null || articles!.isEmpty) {
+    final savedProvider = Provider.of<SavedPostsProvider>(context);
+    final articles = savedProvider.savedPosts;
+    if (articles.isEmpty) {
       return Container(
           width: double.infinity,
           height: double.infinity,
@@ -60,19 +26,16 @@ class _ArticleScreenState extends State<ArticleScreen> {
           child: const Center(child: Loader()));
     }
 
-    var savedPostProvider = Provider.of<SavedPostsProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: GlobalVariables.backgroundColor,
         elevation: 0,
-        centerTitle: true,
-        title:
-            Text(GlobalVariables.categories[widget.categoryIndex]['category']),
+        centerTitle: false,
+        title: const Text("Saved Posts"),
       ),
       body: PageView.builder(
         scrollDirection: Axis.vertical,
-        itemCount: articles!.length,
+        itemCount: articles.length,
         itemBuilder: (context, index) {
           return Column(
             children: [
@@ -81,7 +44,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   children: [
                     CachedNetworkImage(
                       height: MediaQuery.of(context).size.height * 0.4,
-                      imageUrl: articles![index].urlToImage,
+                      imageUrl: articles[index].urlToImage,
                       fit: BoxFit.fill,
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),
@@ -91,24 +54,22 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       top: 10,
                       child: GestureDetector(
                         onTap: () {
-                          _isSaved
-                              ? savedPostProvider.removePost(articles![index])
-                              : savedPostProvider.addPost(articles![index]);
-                          setState(() {
-                            _isSaved = !_isSaved;
-                          });
+                          savedProvider.removePost(articles[index]);
+                          setState(() {});
                         },
-                        child: _isSaved
-                            ? const Icon(
-                                UniconsSolid.bookmark,
-                                size: 36,
-                                color: GlobalVariables.backgroundColor,
-                              )
-                            : const Icon(
-                                UniconsLine.bookmark,
-                                size: 35,
-                                color: GlobalVariables.backgroundColor,
-                              ),
+                        child: const Row(
+                          children: [
+                            Text("UnSave", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
+                              UniconsLine.bookmark,
+                              size: 35,
+                              color: GlobalVariables.backgroundColor,
+                            ),
+                          ],
+                        ),
                       ),
                     )
                   ],
@@ -124,7 +85,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: Text(
-                          articles![index].title,
+                          articles[index].title,
                           maxLines: 4,
                           overflow: TextOverflow.fade,
                           style: const TextStyle(
@@ -140,7 +101,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: Text(
-                          "${articles![index].description}.${articles![index].content}",
+                          "${articles[index].description}.${articles[index].content}",
                           maxLines: 15,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(

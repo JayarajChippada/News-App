@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/common/bottom_bar.dart';
 import 'package:news_app/constants/utilis.dart';
+import 'package:news_app/providers/saved_posts.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context) => SavedPostsProvider()),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

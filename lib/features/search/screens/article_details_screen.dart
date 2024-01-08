@@ -1,25 +1,27 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/constants/global_variables.dart';
+import 'package:news_app/models/article.dart';
+import 'package:news_app/providers/saved_posts.dart';
+import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
 
-class ArticleDetailsScreen extends StatelessWidget {
-  final String urlToImage;
-  final String title;
-  final String description;
-  final String content;
-  const ArticleDetailsScreen(
-    {super.key,
-      required this.urlToImage,
-      required this.title,
-      required this.description,
-      required this.content}
-  );
-
-  void onSave() {}
+class ArticleDetailsScreen extends StatefulWidget {
+  final Article article;
+  const ArticleDetailsScreen({
+    super.key,
+    required this.article,
+  });
 
   @override
+  State<ArticleDetailsScreen> createState() => _ArticleDetailsScreenState();
+}
+
+class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
+  bool _isSaved = false;
+  @override
   Widget build(BuildContext context) {
+    var savedPostProvider = Provider.of<SavedPostsProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -31,7 +33,7 @@ class ArticleDetailsScreen extends StatelessWidget {
               children: [
                 CachedNetworkImage(
                   height: MediaQuery.of(context).size.height * 0.45,
-                  imageUrl: urlToImage,
+                  imageUrl: widget.article.urlToImage,
                   fit: BoxFit.fill,
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
@@ -39,13 +41,25 @@ class ArticleDetailsScreen extends StatelessWidget {
                   right: 10,
                   top: 10,
                   child: GestureDetector(
-                    onTap: onSave,
-                    child: const Icon(
-                      UniconsLine.bookmark,
-                      size: 35,
-                      color: GlobalVariables.backgroundColor,
-                    ),
-                  ),
+                        onTap: () {
+                          _isSaved ? savedPostProvider.removePost(widget.article) 
+                          : savedPostProvider.addPost(widget.article);
+                          setState(() {
+                            _isSaved = !_isSaved;
+                          });
+                        },
+                        child: _isSaved ? 
+                        const Icon(
+                          UniconsSolid.bookmark,
+                          size: 36,
+                          color: GlobalVariables.backgroundColor,
+                        )
+                        : const Icon(
+                          UniconsLine.bookmark,
+                          size: 35,
+                          color: GlobalVariables.backgroundColor,
+                        ),
+                      ),
                 )
               ],
             ),
@@ -60,7 +74,7 @@ class ArticleDetailsScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: Text(
-                      title,
+                      widget.article.title,
                       maxLines: 4,
                       overflow: TextOverflow.fade,
                       style: const TextStyle(
@@ -76,7 +90,7 @@ class ArticleDetailsScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: Text(
-                      "$description.$content",
+                      "${widget.article.description}.${widget.article.content}",
                       maxLines: 15,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
