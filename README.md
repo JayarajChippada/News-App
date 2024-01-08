@@ -63,7 +63,7 @@ flutter run
 This will build and run the application on a connected device or emulator.
 
 ### App Demo
-- [Video Link](https://flutter.dev/docs/get-started/install)
+- [Video Link](https://drive.google.com/file/d/1orvyJHpQSclpR9uqDJMqOE5beiMIE_tM/view?usp=sharing)
 
 ## Resources:
 A few resources to get you started if this is your first Flutter project:
